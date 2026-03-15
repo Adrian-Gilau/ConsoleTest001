@@ -7,44 +7,51 @@ public class BoatMovements
         int rows = gameMatrix.GetLength(0);
         int cols = gameMatrix.GetLength(1);
 
-        if (toRow < 0 || toRow >= rows || toColumn < 0 || toColumn >= cols)
+        // 1. Bounds check
+        if (fromRow < 0 || fromRow >= rows || fromColumn < 0 || fromColumn >= cols ||
+            toRow < 0 || toRow >= rows || toColumn < 0 || toColumn >= cols)
         {
-            return false; // Out of bounds
+            return false;
         }
 
+        // 2. Destination must be water
         if (!gameMatrix[toRow, toColumn])
         {
-            return false; // Can't travel through land
+            return false;
         }
 
-        if (fromRow == toRow)
+        // 3. Movement rules
+
+        // Move UP
+        if (toRow == fromRow - 1 && toColumn == fromColumn)
         {
-            int step = fromColumn < toColumn ? 1 : -1;
-            for (int col = fromColumn; col != toColumn; col += step)
-            {
-                if (!gameMatrix[fromRow, col])
-                {
-                    return false;
-                }
-            }
-        }
-        else if (fromColumn == toColumn)
-        {
-            int step = fromRow < toRow ? 1 : -1;
-            for (int row = fromRow; row != toRow; row += step)
-            {
-                if (!gameMatrix[row, fromColumn])
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            return false; // Only horizontal or vertical moves allowed
+            return gameMatrix[toRow, toColumn];
         }
 
-        return true;
+        // Move DOWN
+        if (toRow == fromRow + 1 && toColumn == fromColumn)
+        {
+            return gameMatrix[toRow, toColumn];
+        }
+
+        // Move LEFT
+        if (toRow == fromRow && toColumn == fromColumn - 1)
+        {
+            return gameMatrix[toRow, toColumn];
+        }
+
+        // Move RIGHT (2 spaces)
+        if (toRow == fromRow && toColumn == fromColumn + 2)
+        {
+            // Cannot cross land
+            if (!gameMatrix[fromRow, fromColumn + 1])
+                return false;
+
+            return gameMatrix[toRow, toColumn];
+        }
+
+        // Any other movement is invalid
+        return false;
     }
 
     public static void Main()
@@ -59,8 +66,8 @@ public class BoatMovements
             {false, false, false, false, false, false},
         };
 
-        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 2, 2)); // true, Valid move
-        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 3, 4)); // false, Can't travel through land
-        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 6, 2)); // false, Out of bounds
+        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 2, 2)); // true
+        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 3, 4)); // false
+        Console.WriteLine(CanTravelTo(gameMatrix, 3, 2, 6, 2)); // false
     }
 }
